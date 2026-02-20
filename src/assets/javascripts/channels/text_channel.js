@@ -37,7 +37,7 @@ window.setupText = () => {
                 doc.text.insertAt(index, value);
             })
 
-            textEditor.setTextOnInsertWithSelections(newDoc.text.toString(), index, value);
+            // textEditor.setTextOnInsertWithSelections(newDoc.text.toString(), index, value);
 
             currentDoc = newDoc;
         } else if(data["operation"] == "delete") {
@@ -51,7 +51,7 @@ window.setupText = () => {
                 doc.text.deleteAt(index, length);
             })
 
-            textEditor.setTextOnDeleteWithSelections(newDoc.text.toString(), index, length);
+            // textEditor.setTextOnDeleteWithSelections(newDoc.text.toString(), index, length);
 
             currentDoc = newDoc;
         } else if(data["operation"] == "selection") {

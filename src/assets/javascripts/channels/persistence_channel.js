@@ -25,7 +25,7 @@ window.setupPersistence = () => {
         console.log(data);
         if(data["text_packets"] != undefined) {
             currentDoc = Automerge.init();
-            textEditor.setText("");
+            // textEditor.setText("");
             data["text_packets"].forEach(function(json, i) {
                 var json_data = JSON.parse(json);
                 if(json_data["operation"] == "insert") {
@@ -39,7 +39,7 @@ window.setupPersistence = () => {
                         doc.text.insertAt(index, value);
                     })
         
-                    textEditor.setTextOnInsertWithSelections(newDoc.text.toString(), index, value);
+                    // textEditor.setTextOnInsertWithSelections(newDoc.text.toString(), index, value);
         
                     currentDoc = newDoc;
                     return;
@@ -54,7 +54,7 @@ window.setupPersistence = () => {
                         doc.text.deleteAt(index, length);
                     })
 
-                    textEditor.setTextOnDeleteWithSelections(newDoc.text.toString(), index, length);
+                    // textEditor.setTextOnDeleteWithSelections(newDoc.text.toString(), index, length);
 
                     currentDoc = newDoc;
 
