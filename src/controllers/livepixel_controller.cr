@@ -8,8 +8,8 @@ require "slack"
 require "crypto/bcrypt/password"
 
 #paypal
-CLIENT_ID = Amber.settings.secrets["PAYPAL_CLIENT_ID"]
-CLIENT_SECRET = Amber.settings.secrets["PAYPAL_CLIENT_SECRET"]
+CLIENT_ID = "" #Amber.settings.secrets["PAYPAL_CLIENT_ID"]
+CLIENT_SECRET = "" #Amber.settings.secrets["PAYPAL_CLIENT_SECRET"]
 
 #slack
 # SLACK_SIGNING_SECRET = Amber.settings.secrets["SLACK_SIGNING_SECRET"]
