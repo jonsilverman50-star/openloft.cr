@@ -164,13 +164,6 @@ export function init() {
         e.preventDefault();
     })
 
-    // $("#clear_canvas").click(function (e) {
-    //     $.get("/clear_canvas?room=" + room, function () {
-
-    //     });
-    //     e.preventDefault();
-    // })
-
     canvas.addEventListener('touchstart', tap);
     canvas.addEventListener('touchmove', tapDrag);
     // canvasDiv.appendChild(bgCanvas);
