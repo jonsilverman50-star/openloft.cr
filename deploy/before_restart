@@ -9,6 +9,6 @@ run "shards update --production --ignore-crystal-version"
 
 run "shards build openloft.cr --release --ignore-crystal-version"
 
-run "PATH=$PATH:/home/gbaldraw/node-v14.15.0-linux-x64/bin npm install"
+run "npm install"
 
-run "PATH=$PATH:/home/gbaldraw/node-v14.15.0-linux-x64/bin npm run release"
+run "npm run release"
