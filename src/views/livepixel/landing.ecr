@@ -19,7 +19,6 @@
     <% else %>
       <p>Welcome, <%= session[:username] %>!</p>
       <button id="logout_button" class="btn btn-primary">Logout</button>
-      <p><strong><%= I18n.translate("agree") %> <a href="/tos.html"><%= I18n.translate("terms") %></a> and <a href="/privacy_policy"><%= I18n.translate("privacy_policy") %></a></strong></p>
       <div id="welcome_links" class="mt-3 mb-3">
         <p class="d-inline mr-3"><button class="btn btn-primary" id="public_room"><%= I18n.translate("create") %></button></p>
         <p class="d-inline mr-3"><button class="btn btn-primary" id="gbalda_room"><%= I18n.translate("global") %></button></p>

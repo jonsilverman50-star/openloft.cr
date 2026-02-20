@@ -28,28 +28,28 @@ class ChatChannel < Amber::WebSockets::Channel
 
       # alert slack https://slack.com/api/calls.participants.add
 
-      message = {
-        id: redis.get("#{room}_slack_call_id").to_s,
-        users: [
-          {external_id: data["name"].to_s, display_name: data["name"].to_s}.to_h
-        ].to_a
-      }.to_h
+      # message = {
+      #   id: redis.get("#{room}_slack_call_id").to_s,
+      #   users: [
+      #     {external_id: data["name"].to_s, display_name: data["name"].to_s}.to_h
+      #   ].to_a
+      # }.to_h
 
-      puts message.inspect
+      # puts message.inspect
   
-      uri = URI.parse("https://slack.com/api/calls.participants.add")
+      # uri = URI.parse("https://slack.com/api/calls.participants.add")
   
-      client = HTTP::Client.new uri
+      # client = HTTP::Client.new uri
   
-      client.before_request do |request|
-          request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
-          request.headers["Content-Type"] = "application/json"
-          request.body = message.to_json
-          request.content_length = request.body.to_s.bytesize
-      end
-      response = client.post(uri.path)
+      # client.before_request do |request|
+      #     request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
+      #     request.headers["Content-Type"] = "application/json"
+      #     request.body = message.to_json
+      #     request.content_length = request.body.to_s.bytesize
+      # end
+      # response = client.post(uri.path)
 
-      puts "calls.participants.add: #{response.body.to_s}"
+      # puts "calls.participants.add: #{response.body.to_s}"
 
 
       # client_socket.socket.send({"event" => "message", "topic" => message["topic"].to_s, "subject" => "message_new", "payload" => {nicks: nicks}}.to_json)
