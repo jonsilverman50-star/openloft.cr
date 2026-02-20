@@ -857,16 +857,16 @@ export function init() {
         $("#input").change();
     })
 
-    setInterval(function () {
-        $.getJSON("/random_ad", "", function (data) {
-            let ad = data["ad"];
-            let link = data["banner_link"];
-            if (ad != "" && link != "") {
-                $("#gbaldvertisement_link").prop("href", link);
-                $("#gbaldvertisement_img").prop("src", `data:image/png;base64,${ad}`);
-            }
-        })
-    }, 30000);
+    // setInterval(function () {
+    //     $.getJSON("/random_ad", "", function (data) {
+    //         let ad = data["ad"];
+    //         let link = data["banner_link"];
+    //         if (ad != "" && link != "") {
+    //             $("#gbaldvertisement_link").prop("href", link);
+    //             $("#gbaldvertisement_img").prop("src", `data:image/png;base64,${ad}`);
+    //         }
+    //     })
+    // }, 30000);
 
     $("#brush_style").change(function () {
         curBrushStyle = $("#brush_style").val();

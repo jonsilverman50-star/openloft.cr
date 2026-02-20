@@ -1,4 +1,5 @@
 import {drawMousePoint} from "./draw_mouse_point"
+import { rgbToHex, hexToRgb } from './hex_to_rgb';
 
 export function redraw(bg, flatten) {
     if (context == undefined) {

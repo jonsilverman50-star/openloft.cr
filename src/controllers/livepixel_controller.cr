@@ -12,7 +12,7 @@ CLIENT_ID = Amber.settings.secrets["PAYPAL_CLIENT_ID"]
 CLIENT_SECRET = Amber.settings.secrets["PAYPAL_CLIENT_SECRET"]
 
 #slack
-SLACK_SIGNING_SECRET = Amber.settings.secrets["SLACK_SIGNING_SECRET"]
+# SLACK_SIGNING_SECRET = Amber.settings.secrets["SLACK_SIGNING_SECRET"]
 
 class LivepixelController < ApplicationController
 
@@ -56,182 +56,182 @@ class LivepixelController < ApplicationController
   end
 
 
-  def event_subscription
-    # token = params[:token]
-    # challenge = params[:challenge]
-    # event = params[:event]
-    # type = params[:type]
-    json = JSON.parse(request.body.as(IO).gets_to_end)
-    token = json["token"].to_s
-    challenge = json["challenge"].to_s
-    event = json["event"].as_h
-    type = json["type"].to_s
-    channel_id = event["channel"]["id"]
+  # def event_subscription
+  #   # token = params[:token]
+  #   # challenge = params[:challenge]
+  #   # event = params[:event]
+  #   # type = params[:type]
+  #   json = JSON.parse(request.body.as(IO).gets_to_end)
+  #   token = json["token"].to_s
+  #   challenge = json["challenge"].to_s
+  #   event = json["event"].as_h
+  #   type = json["type"].to_s
+  #   channel_id = event["channel"]["id"]
 
-    timestamp = request.headers["X-Slack-Request-Timestamp"]
-    if (Time.utc.to_unix - timestamp.to_i).abs > 60 * 5
-      # The request timestamp is more than five minutes from local time.
-      # It could be a replay attack, so let's ignore it.
-      return
-    end
-    # sig_basestring = "v0:" + timestamp + ":" + request.body.as(IO).gets_to_end.to_s
-    # puts "sig_basestring: #{sig_basestring}"
-    # # my_signature = 'v0=' + hmac.compute_hash_sha256(
-    # # slack_signing_secret,
-    # # sig_basestring
-    # # ).hexdigest()
-    # my_signature = "v0=" + OpenSSL::HMAC.hexdigest(:sha256, SLACK_SIGNING_SECRET, sig_basestring)
-    # puts "my signature: #{my_signature}"
-    # slack_signature = request.headers["X-Slack-Signature"]
-    # puts "slack signature: #{slack_signature}"
-    # if my_signature != slack_signature
-    #   # Signature mismatch.
-    #   return
-    # end
-    if params[:token] != "SLACK_TOKEN"
-      # Token mismatch.
-      return
-    end
+  #   timestamp = request.headers["X-Slack-Request-Timestamp"]
+  #   if (Time.utc.to_unix - timestamp.to_i).abs > 60 * 5
+  #     # The request timestamp is more than five minutes from local time.
+  #     # It could be a replay attack, so let's ignore it.
+  #     return
+  #   end
+  #   # sig_basestring = "v0:" + timestamp + ":" + request.body.as(IO).gets_to_end.to_s
+  #   # puts "sig_basestring: #{sig_basestring}"
+  #   # # my_signature = 'v0=' + hmac.compute_hash_sha256(
+  #   # # slack_signing_secret,
+  #   # # sig_basestring
+  #   # # ).hexdigest()
+  #   # my_signature = "v0=" + OpenSSL::HMAC.hexdigest(:sha256, SLACK_SIGNING_SECRET, sig_basestring)
+  #   # puts "my signature: #{my_signature}"
+  #   # slack_signature = request.headers["X-Slack-Signature"]
+  #   # puts "slack signature: #{slack_signature}"
+  #   # if my_signature != slack_signature
+  #   #   # Signature mismatch.
+  #   #   return
+  #   # end
+  #   if params[:token] != "SLACK_TOKEN"
+  #     # Token mismatch.
+  #     return
+  #   end
 
-    if type == "link_shared"
-      # https://slack.com/api/calls.add
-      url = event[:links].as_a[0].as_h[:url].to_s
-      id = url.split("=")[1].to_s
-      puts "url: #{url} id: #{id}"
-      message = {
-        "external_unique_id" => id,
-        "join_url" => url,
-      }.to_h
-      headers = HTTP::Headers{"Content-Type" => "application/json"}
+  #   if type == "link_shared"
+  #     # https://slack.com/api/calls.add
+  #     url = event[:links].as_a[0].as_h[:url].to_s
+  #     id = url.split("=")[1].to_s
+  #     puts "url: #{url} id: #{id}"
+  #     message = {
+  #       "external_unique_id" => id,
+  #       "join_url" => url,
+  #     }.to_h
+  #     headers = HTTP::Headers{"Content-Type" => "application/json"}
   
-      uri = URI.parse("https://slack.com/api/calls.add")
+  #     uri = URI.parse("https://slack.com/api/calls.add")
   
-      client = HTTP::Client.new uri
+  #     client = HTTP::Client.new uri
   
-      client.before_request do |request|
-          request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
-          request.headers["Content-Type"] = "application/json"
-          request.body = message.to_json
-          request.content_length = request.body.to_s.bytesize
-      end
-      response = client.post(uri.path)
+  #     client.before_request do |request|
+  #         request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
+  #         request.headers["Content-Type"] = "application/json"
+  #         request.body = message.to_json
+  #         request.content_length = request.body.to_s.bytesize
+  #     end
+  #     response = client.post(uri.path)
 
-      call_id = JSON.parse(response.body.to_s)["call"].as_h["id"].to_s
+  #     call_id = JSON.parse(response.body.to_s)["call"].as_h["id"].to_s
 
-      redis = REDIS
-      redis.set("#{id}_slack_call_id", call_id)
+  #     redis = REDIS
+  #     redis.set("#{id}_slack_call_id", call_id)
 
-      puts "calls.add: #{response.body.to_s}"
+  #     puts "calls.add: #{response.body.to_s}"
 
 
-      # https://slack.com/api/chat.unfurl
+  #     # https://slack.com/api/chat.unfurl
 
-      message = {
-        "channel" => channel_id,
-        "ts" => event[:event_ts],
-        "unfurls" => { 
-          url => { 
-            "type": "call",
-            "call_id": id
-          }
-        },
-      }.to_h
-      headers = HTTP::Headers{"Content-Type" => "application/json"}
+  #     message = {
+  #       "channel" => channel_id,
+  #       "ts" => event[:event_ts],
+  #       "unfurls" => { 
+  #         url => { 
+  #           "type": "call",
+  #           "call_id": id
+  #         }
+  #       },
+  #     }.to_h
+  #     headers = HTTP::Headers{"Content-Type" => "application/json"}
   
-      uri = URI.parse("https://slack.com/api/chat.unfurl")
+  #     uri = URI.parse("https://slack.com/api/chat.unfurl")
   
-      client = HTTP::Client.new uri
+  #     client = HTTP::Client.new uri
   
-      client.before_request do |request|
-          request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
-          request.headers["Content-Type"] = "application/json"
-          request.body = message.to_json
-          request.content_length = request.body.to_s.bytesize
-      end
-      response = client.post(uri.path)
+  #     client.before_request do |request|
+  #         request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
+  #         request.headers["Content-Type"] = "application/json"
+  #         request.body = message.to_json
+  #         request.content_length = request.body.to_s.bytesize
+  #     end
+  #     response = client.post(uri.path)
 
-      puts "chat.unfurl: #{response.body.to_s}"
+  #     puts "chat.unfurl: #{response.body.to_s}"
 
-    end
+  #   end
     
     
-    return {challenge: challenge}.to_json
-  end
+  #   return {challenge: challenge}.to_json
+  # end
 
-  def parse_command
-    # command = Slack::SlashCommand.from_request_body(request.body.to_s)
+  # def parse_command
+  #   # command = Slack::SlashCommand.from_request_body(request.body.to_s)
 
-    command = params["command"].to_s
-    response_url = params["response_url"].to_s
-    # channel = params["channel"].to_s
+  #   command = params["command"].to_s
+  #   response_url = params["response_url"].to_s
+  #   # channel = params["channel"].to_s
 
-    # # create private room
+  #   # # create private room
 
-    id = UUID.random.to_s
+  #   id = UUID.random.to_s
 
-    url = "https://openloft.org/canvas?room=#{id}"
+  #   url = "https://openloft.org/canvas?room=#{id}"
 
-      message = {
-        "response_type" => "call",
-        "call_initiation_url" => url,
-        "desktop_protocol_call_initiation_url" => url
-      }.to_h
-      headers = HTTP::Headers{"Content-Type" => "application/json"}
+  #     message = {
+  #       "response_type" => "call",
+  #       "call_initiation_url" => url,
+  #       "desktop_protocol_call_initiation_url" => url
+  #     }.to_h
+  #     headers = HTTP::Headers{"Content-Type" => "application/json"}
 
-      uri = URI.parse(response_url)
+  #     uri = URI.parse(response_url)
   
-      client = HTTP::Client.new uri
+  #     client = HTTP::Client.new uri
   
-      client.before_request do |request|
-          request.headers["Content-Type"] = "application/json"
-          request.body = message.to_json
-          request.content_length = request.body.to_s.bytesize
-      end
-      response = client.post(uri.path)
+  #     client.before_request do |request|
+  #         request.headers["Content-Type"] = "application/json"
+  #         request.body = message.to_json
+  #         request.content_length = request.body.to_s.bytesize
+  #     end
+  #     response = client.post(uri.path)
 
-      puts "quick ack: #{response.body.to_s}"
+  #     puts "quick ack: #{response.body.to_s}"
 
-      # https://slack.com/api/calls.add
+  #     # https://slack.com/api/calls.add
 
-      message = {
-        "external_unique_id" => id,
-        "join_url" => url,
-      }.to_h
-      headers = HTTP::Headers{"Content-Type" => "application/json"}
+  #     message = {
+  #       "external_unique_id" => id,
+  #       "join_url" => url,
+  #     }.to_h
+  #     headers = HTTP::Headers{"Content-Type" => "application/json"}
   
-      uri = URI.parse("https://slack.com/api/calls.add")
+  #     uri = URI.parse("https://slack.com/api/calls.add")
   
-      client = HTTP::Client.new uri
+  #     client = HTTP::Client.new uri
   
-      client.before_request do |request|
-          request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
-          request.headers["Content-Type"] = "application/json"
-          request.body = message.to_json
-          request.content_length = request.body.to_s.bytesize
-      end
-      response = client.post(uri.path)
+  #     client.before_request do |request|
+  #         request.headers["Authorization"] = "Bearer #{Amber.settings.secrets["SLACK_ID_TOKEN"]}"
+  #         request.headers["Content-Type"] = "application/json"
+  #         request.body = message.to_json
+  #         request.content_length = request.body.to_s.bytesize
+  #     end
+  #     response = client.post(uri.path)
 
-      call_id = JSON.parse(response.body.to_s)["call"].as_h["id"].to_s
+  #     call_id = JSON.parse(response.body.to_s)["call"].as_h["id"].to_s
 
-      redis = REDIS
-      redis.set("#{id}_slack_call_id", call_id)
+  #     redis = REDIS
+  #     redis.set("#{id}_slack_call_id", call_id)
 
-      puts "calls.add: #{response.body.to_s}"
+  #     puts "calls.add: #{response.body.to_s}"
 
-    # end
+  #   # end
 
-    message = {
-      text: "Join here: #{url}",
-      response_type: "in_channel",
-      blocks: [{
-        type: "call",
-        call_id: id,
-      }]
-    }.to_h
+  #   message = {
+  #     text: "Join here: #{url}",
+  #     response_type: "in_channel",
+  #     blocks: [{
+  #       type: "call",
+  #       call_id: id,
+  #     }]
+  #   }.to_h
 
-    return message.to_json
+  #   return message.to_json
   
-  end
+  # end
 
   def landing
     locale = @locale
@@ -350,7 +350,7 @@ class LivepixelController < ApplicationController
 
     if ad == ""
       ad = File.read("./public/default_ad.base64").to_s
-      banner_link = "https://openloft.org/buy_ad"
+      banner_link = "#"
     end
 
     chats = redis.lrange("chats_#{room}", 0, -1)
@@ -365,30 +365,30 @@ class LivepixelController < ApplicationController
     render "canvas.ecr", layout: "gbaldraw.ecr"
   end
 
-  def random_ad
-    redis = REDIS
-    # Sanitizer = Sanitize::Policy::HTMLSanitizer.basic
-    ad = ""
-    banner_link = ""
-    while ad == ""
-      order_id = redis.srandmember("banner_order_ids").to_s
-      break if order_id == ""
-      ad = redis.get(order_id) || ""
-      banner_link = redis.get("#{order_id}_link") || ""
-      if ad == ""
-        redis.srem("banner_order_ids", order_id)
-      else
-        break
-      end
-    end
+  # def random_ad
+  #   redis = REDIS
+  #   # Sanitizer = Sanitize::Policy::HTMLSanitizer.basic
+  #   ad = ""
+  #   banner_link = ""
+  #   while ad == ""
+  #     order_id = redis.srandmember("banner_order_ids").to_s
+  #     break if order_id == ""
+  #     ad = redis.get(order_id) || ""
+  #     banner_link = redis.get("#{order_id}_link") || ""
+  #     if ad == ""
+  #       redis.srem("banner_order_ids", order_id)
+  #     else
+  #       break
+  #     end
+  #   end
 
-    if ad == ""
-      ad = File.read("./public/default_ad.base64").to_s
-      banner_link = "https://openloft.org/buy_ad"
-    end
+  #   if ad == ""
+  #     ad = File.read("./public/default_ad.base64").to_s
+  #     banner_link = "https://openloft.org/buy_ad"
+  #   end
     
-    {ad: Sanitizer.process(ad), banner_link: Sanitizer.process(banner_link)}.to_h.to_json
-  end
+  #   {ad: Sanitizer.process(ad), banner_link: Sanitizer.process(banner_link)}.to_h.to_json
+  # end
 
 
   def stats
@@ -536,347 +536,347 @@ class LivepixelController < ApplicationController
       }.to_h.to_json
     end
 
-    def upload_to_scalable_press
+    # def upload_to_scalable_press
 
-      redis = REDIS
+    #   redis = REDIS
   
-      file_url = params["file_url"]
+    #   file_url = params["file_url"]
 
-      path = ""
-      save_name = ""
-      random_file : File = File.new("temp.png", "w")
+    #   path = ""
+    #   save_name = ""
+    #   random_file : File = File.new("temp.png", "w")
 
-      if file_url == ""
-        path = params.files["picture"].file.path
+    #   if file_url == ""
+    #     path = params.files["picture"].file.path
 
-        save_name = "#{Random.rand(10000).to_i}.png"
-        random_file = File.open("public/#{save_name}", "w") do |file|
-            file << File.open(path).gets_to_end
-        end
-        file_url = "https://openloft.org/#{save_name}"
-      else
-        response = HTTP::Client.get(file_url)
-        save_name = "#{Random.rand(10000).to_i}.png"
-        random_file = File.open("public/#{save_name}", "w") do |file|
-            file << response.body
-        end
-      end
-      puts path
+    #     save_name = "#{Random.rand(10000).to_i}.png"
+    #     random_file = File.open("public/#{save_name}", "w") do |file|
+    #         file << File.open(path).gets_to_end
+    #     end
+    #     file_url = "https://openloft.org/#{save_name}"
+    #   else
+    #     response = HTTP::Client.get(file_url)
+    #     save_name = "#{Random.rand(10000).to_i}.png"
+    #     random_file = File.open("public/#{save_name}", "w") do |file|
+    #         file << response.body
+    #     end
+    #   end
+    #   puts path
   
-      url = URI.parse("https://api.scalablepress.com/v2/design")
+    #   url = URI.parse("https://api.scalablepress.com/v2/design")
   
-      IO.pipe do |reader, writer|
-        scalable_channel = Channel(String).new(1)
+    #   IO.pipe do |reader, writer|
+    #     scalable_channel = Channel(String).new(1)
   
-        spawn do
-          HTTP::FormData.build(writer) do |formdata|
-            scalable_channel.send(formdata.content_type)
+    #     spawn do
+    #       HTTP::FormData.build(writer) do |formdata|
+    #         scalable_channel.send(formdata.content_type)
   
             
-            # File.open(path) do |file|
-              # metadata = HTTP::FormData::FileMetadata.new(filename: "foo.png")
-              # headers = HTTP::Headers{"Content-Type" => "image/png"}
+    #         # File.open(path) do |file|
+    #           # metadata = HTTP::FormData::FileMetadata.new(filename: "foo.png")
+    #           # headers = HTTP::Headers{"Content-Type" => "image/png"}
               
-              # formdata.field("sides[front]", 1.0)
-              # formdata.field("products[0][id]", "gildan-sweatshirt-crew")
-              # formdata.field("products[0][color]", "ash")
-              # formdata.field("products[0][quantity]", 1)
-              # formdata.field("products[0][size]", "lrg")
-              # formdata.field("sides[front][colors][0]", "white")
-              # formdata.file("sides[front][artwork]", file, metadata, headers)
-              formdata.field("sides[front][artwork]", file_url)
-              formdata.field("type", "dtg")
-              formdata.field("sides[front][dimensions][width]", "14")
-              formdata.field("sides[front][position][horizontal]", "C")
-              formdata.field("sides[front][position][offset][top]", "0")
-            # end
-          end
+    #           # formdata.field("sides[front]", 1.0)
+    #           # formdata.field("products[0][id]", "gildan-sweatshirt-crew")
+    #           # formdata.field("products[0][color]", "ash")
+    #           # formdata.field("products[0][quantity]", 1)
+    #           # formdata.field("products[0][size]", "lrg")
+    #           # formdata.field("sides[front][colors][0]", "white")
+    #           # formdata.file("sides[front][artwork]", file, metadata, headers)
+    #           formdata.field("sides[front][artwork]", file_url)
+    #           formdata.field("type", "dtg")
+    #           formdata.field("sides[front][dimensions][width]", "14")
+    #           formdata.field("sides[front][position][horizontal]", "C")
+    #           formdata.field("sides[front][position][offset][top]", "0")
+    #         # end
+    #       end
   
-          writer.close
-        end
+    #       writer.close
+    #     end
   
-        client = HTTP::Client.new url
+    #     client = HTTP::Client.new url
   
-        client.before_request do |request|
-            request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-            request.headers["Content-Type"] = scalable_channel.receive
-            request.body = reader.gets_to_end
-            request.content_length = request.body.to_s.bytesize
-        end
-        response = client.post("/v2/design")
+    #     client.before_request do |request|
+    #         request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #         request.headers["Content-Type"] = scalable_channel.receive
+    #         request.body = reader.gets_to_end
+    #         request.content_length = request.body.to_s.bytesize
+    #     end
+    #     response = client.post("/v2/design")
   
-        puts "Response code #{response.status_code}"
-        puts response.body
+    #     puts "Response code #{response.status_code}"
+    #     puts response.body
 
-        json = JSON.parse(response.body).as_h
+    #     json = JSON.parse(response.body).as_h
 
-        File.open("public/#{json["designId"]}.png", "w") do |file|
-            file << File.open(random_file.path).gets_to_end
-        end
+    #     File.open("public/#{json["designId"]}.png", "w") do |file|
+    #         file << File.open(random_file.path).gets_to_end
+    #     end
 
-        File.delete(random_file.path)
+    #     File.delete(random_file.path)
 
-        response.body.to_s
-      end
-
-
-
-    end
+    #     response.body.to_s
+    #   end
 
 
-    def show_scalable_product_categories
 
-      design_id = params["designId"]
-
-      url = URI.parse("https://api.scalablepress.com/v2/categories")
-
-      client = HTTP::Client.new(url)
-      client.before_request do |request|
-        request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-      end
-      response = client.get "/v2/categories"
-
-      categories = JSON.parse(response.body)
-
-      puts categories
-
-      render("show_scalable_product_categories.ecr")
-    end
-
-    def show_scalable_products
-
-      design_id = params["design_id"]
-      category_id = params["category_id"]
-
-      url = URI.parse("https://api.scalablepress.com/v2/categories/#{category_id}")
-
-      client = HTTP::Client.new(url)
-      client.before_request do |request|
-        request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-      end
-      response = client.get "/v2/categories/#{category_id}"
-
-      puts response.body
-
-      products = JSON.parse(response.body).as_h["products"].as_a
-
-      puts products
-
-      render("show_scalable_products.ecr")
-    end
+    # end
 
 
-    def show_scalable_mockup
+    # def show_scalable_product_categories
 
-      product_id = params["product_id"]
-      design_id = params["design_id"]
-      color = params["color"] rescue "White"
+    #   design_id = params["designId"]
 
-      url = URI.parse("https://api.scalablepress.com/v3/mockup")
+    #   url = URI.parse("https://api.scalablepress.com/v2/categories")
+
+    #   client = HTTP::Client.new(url)
+    #   client.before_request do |request|
+    #     request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #   end
+    #   response = client.get "/v2/categories"
+
+    #   categories = JSON.parse(response.body)
+
+    #   puts categories
+
+    #   render("show_scalable_product_categories.ecr")
+    # end
+
+    # def show_scalable_products
+
+    #   design_id = params["design_id"]
+    #   category_id = params["category_id"]
+
+    #   url = URI.parse("https://api.scalablepress.com/v2/categories/#{category_id}")
+
+    #   client = HTTP::Client.new(url)
+    #   client.before_request do |request|
+    #     request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #   end
+    #   response = client.get "/v2/categories/#{category_id}"
+
+    #   puts response.body
+
+    #   products = JSON.parse(response.body).as_h["products"].as_a
+
+    #   puts products
+
+    #   render("show_scalable_products.ecr")
+    # end
+
+
+    # def show_scalable_mockup
+
+    #   product_id = params["product_id"]
+    #   design_id = params["design_id"]
+    #   color = params["color"] rescue "White"
+
+    #   url = URI.parse("https://api.scalablepress.com/v3/mockup")
   
-      IO.pipe do |reader, writer|
-        scalable_channel = Channel(String).new(1)
+    #   IO.pipe do |reader, writer|
+    #     scalable_channel = Channel(String).new(1)
   
-        spawn do
-          HTTP::FormData.build(writer) do |formdata|
-            scalable_channel.send(formdata.content_type)
+    #     spawn do
+    #       HTTP::FormData.build(writer) do |formdata|
+    #         scalable_channel.send(formdata.content_type)
 
               
-              formdata.field("template[name]", "front")
-              formdata.field("product[id]", product_id)
-              formdata.field("product[color]", color)
-              formdata.field("design[type]", "dtg")
-              formdata.field("design[sides][front][artwork]", "https://openloft.org/#{design_id}.png")
-              formdata.field("design[sides][front][dimensions][width]", "14")
-              formdata.field("design[sides][front][position][horizontal]", "C")
-              formdata.field("design[sides][front][position][offset][top]", "0")
-              formdata.field("output[width]", "1000")
-              formdata.field("output[height]", "1000")
-              formdata.field("padding[height]", "10")
-              formdata.field("output[format]", "png")
+    #           formdata.field("template[name]", "front")
+    #           formdata.field("product[id]", product_id)
+    #           formdata.field("product[color]", color)
+    #           formdata.field("design[type]", "dtg")
+    #           formdata.field("design[sides][front][artwork]", "https://openloft.org/#{design_id}.png")
+    #           formdata.field("design[sides][front][dimensions][width]", "14")
+    #           formdata.field("design[sides][front][position][horizontal]", "C")
+    #           formdata.field("design[sides][front][position][offset][top]", "0")
+    #           formdata.field("output[width]", "1000")
+    #           formdata.field("output[height]", "1000")
+    #           formdata.field("padding[height]", "10")
+    #           formdata.field("output[format]", "png")
 
-          end
+    #       end
   
-          writer.close
-        end
+    #       writer.close
+    #     end
   
-        client = HTTP::Client.new url
+    #     client = HTTP::Client.new url
   
-        client.before_request do |request|
-            request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-            request.headers["Content-Type"] = scalable_channel.receive
-            request.body = reader.gets_to_end
-            request.content_length = request.body.to_s.bytesize
-        end
-        response = client.post("/v3/mockup")
+    #     client.before_request do |request|
+    #         request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #         request.headers["Content-Type"] = scalable_channel.receive
+    #         request.body = reader.gets_to_end
+    #         request.content_length = request.body.to_s.bytesize
+    #     end
+    #     response = client.post("/v3/mockup")
   
-        puts "Response code #{response.status_code}"
-        puts response.body
+    #     puts "Response code #{response.status_code}"
+    #     puts response.body
 
-        json = JSON.parse(response.body.to_s).as_h
-        mockup = json["url"]
+    #     json = JSON.parse(response.body.to_s).as_h
+    #     mockup = json["url"]
 
-        product = JSON.parse(HTTP::Client.get("https://api.scalablepress.com/v2/products/#{product_id}").body).as_h
+    #     product = JSON.parse(HTTP::Client.get("https://api.scalablepress.com/v2/products/#{product_id}").body).as_h
 
 
-        puts product.inspect
+    #     puts product.inspect
 
-        render("show_scalable_mockup.ecr")
-      end
+    #     render("show_scalable_mockup.ecr")
+    #   end
 
-    end
+    # end
 
-    def get_scalable_quote
+    # def get_scalable_quote
 
-      redis = REDIS
+    #   redis = REDIS
 
-      product_id = params["product_id"]
-      design_id = params["design_id"]
-      color = params["color"] rescue "White"
-      quantity = params["quantity"]
-      size = params["size"] rescue "med"
-      name = params["name"]
-      address = params["address"]
-      city = params["city"]
-      state = params["state"]
-      zipcode = params["zipcode"]
+    #   product_id = params["product_id"]
+    #   design_id = params["design_id"]
+    #   color = params["color"] rescue "White"
+    #   quantity = params["quantity"]
+    #   size = params["size"] rescue "med"
+    #   name = params["name"]
+    #   address = params["address"]
+    #   city = params["city"]
+    #   state = params["state"]
+    #   zipcode = params["zipcode"]
 
-      begin
-        File.delete("public/#{design_id}.png")
-      rescue exception
-        puts exception.message
-      end
+    #   begin
+    #     File.delete("public/#{design_id}.png")
+    #   rescue exception
+    #     puts exception.message
+    #   end
       
 
-      url = URI.parse("https://api.scalablepress.com/v2/quote")
+    #   url = URI.parse("https://api.scalablepress.com/v2/quote")
 
-      client = HTTP::Client.new(url)
-      body_string = "type=dtg&products[0][id]=#{product_id}&products[0][color]=#{color}&products[0][quantity]=#{quantity}&products[0][size]=#{size}&address[name]=#{name}&address[address1]=#{address}&address[city]=#{city}&address[state]=#{state}&address[zip]=#{zipcode}&designId=#{design_id}"
-      client.before_request do |request|
-        request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-        request.headers["Content-Type"] = "application/x-www-form-urlencoded"
-      end
+    #   client = HTTP::Client.new(url)
+    #   body_string = "type=dtg&products[0][id]=#{product_id}&products[0][color]=#{color}&products[0][quantity]=#{quantity}&products[0][size]=#{size}&address[name]=#{name}&address[address1]=#{address}&address[city]=#{city}&address[state]=#{state}&address[zip]=#{zipcode}&designId=#{design_id}"
+    #   client.before_request do |request|
+    #     request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #     request.headers["Content-Type"] = "application/x-www-form-urlencoded"
+    #   end
       
-      response = client.post "/v2/quote", body: body_string
+    #   response = client.post "/v2/quote", body: body_string
 
-      quote = JSON.parse(response.body).as_h
+    #   quote = JSON.parse(response.body).as_h
 
-      puts quote.inspect
+    #   puts quote.inspect
 
 
-      total = ((quote["total"].as_f * 0.35) + quote["total"].as_f).round(2)
+    #   total = ((quote["total"].as_f * 0.35) + quote["total"].as_f).round(2)
 
-      order_token = quote["orderToken"].to_s
+    #   order_token = quote["orderToken"].to_s
 
-      puts "selling #{quote["total"]} for #{total}"
-      debug = true
+    #   puts "selling #{quote["total"]} for #{total}"
+    #   debug = true
   
-      body = {
+    #   body = {
     
-        "intent": "CAPTURE",
+    #     "intent": "CAPTURE",
       
-        "purchase_units": [
+    #     "purchase_units": [
       
-          {
+    #       {
       
-            "amount": {
+    #         "amount": {
       
-              "currency_code": "USD",
+    #           "currency_code": "USD",
       
-              "value": total
+    #           "value": total
       
-            }
+    #         }
       
-          }
+    #       }
       
-        ]
+    #     ]
       
-      }.to_h.to_json
-      headers = HTTP::Headers{"Prefer" => "return=representation", "Content-Type" => "application/json", "Authorization" => "Basic #{Base64.strict_encode("#{CLIENT_ID}:#{CLIENT_SECRET}")}"}
-      response = HTTP::Client.post("https://api.paypal.com/v2/checkout/orders", headers, body)
+    #   }.to_h.to_json
+    #   headers = HTTP::Headers{"Prefer" => "return=representation", "Content-Type" => "application/json", "Authorization" => "Basic #{Base64.strict_encode("#{CLIENT_ID}:#{CLIENT_SECRET}")}"}
+    #   response = HTTP::Client.post("https://api.paypal.com/v2/checkout/orders", headers, body)
       
-      puts response.body
+    #   puts response.body
 
-      id = JSON.parse(response.body)["id"]
+    #   id = JSON.parse(response.body)["id"]
 
-      raise "blank order token" if order_token == ""
+    #   raise "blank order token" if order_token == ""
 
-      redis.set("tshirt_order_#{id}", order_token)
+    #   redis.set("tshirt_order_#{id}", order_token)
   
-      response.body.to_json
-      # {"id" => JSON.parse(response.body).as_h["id"], "order_token" => order_token}.to_json
-    end
+    #   response.body.to_json
+    #   # {"id" => JSON.parse(response.body).as_h["id"], "order_token" => order_token}.to_json
+    # end
 
-    def place_scalable_order
-      redis = REDIS
+    # def place_scalable_order
+    #   redis = REDIS
       
-      product_id = params["product_id"]
+    #   product_id = params["product_id"]
 
 
-      debug = true
-      order_id = params["orderID"]
+    #   debug = true
+    #   order_id = params["orderID"]
       
-      order_token = redis.get("tshirt_order_#{order_id}")
-      headers = HTTP::Headers{"Prefer" => "return=representation", "Content-Type" => "application/json", "Authorization" => "Basic #{Base64.strict_encode("#{CLIENT_ID}:#{CLIENT_SECRET}")}"}
-      response = HTTP::Client.post("https://api.paypal.com/v2/checkout/orders/#{order_id}/capture", headers)
+    #   order_token = redis.get("tshirt_order_#{order_id}")
+    #   headers = HTTP::Headers{"Prefer" => "return=representation", "Content-Type" => "application/json", "Authorization" => "Basic #{Base64.strict_encode("#{CLIENT_ID}:#{CLIENT_SECRET}")}"}
+    #   response = HTTP::Client.post("https://api.paypal.com/v2/checkout/orders/#{order_id}/capture", headers)
     
-      puts response.body
+    #   puts response.body
 
-      paypal_response = response.body
+    #   paypal_response = response.body
 
-      json = JSON.parse(response.body)
-      id = json["id"]
+    #   json = JSON.parse(response.body)
+    #   id = json["id"]
 
-      email = json["payer"]["email_address"]
+    #   email = json["payer"]["email_address"]
   
-      redis = REDIS
-      redis.hset("completed_tshirt_orders", email, id)
+    #   redis = REDIS
+    #   redis.hset("completed_tshirt_orders", email, id)
   
       
 
 
 
-      url = URI.parse("https://api.scalablepress.com/v2/order")
+    #   url = URI.parse("https://api.scalablepress.com/v2/order")
 
-      client = HTTP::Client.new(url)
-      body_string = "orderToken=#{order_token}"
-      client.before_request do |request|
-        request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-        request.headers["Content-Type"] = "application/x-www-form-urlencoded"
-      end
+    #   client = HTTP::Client.new(url)
+    #   body_string = "orderToken=#{order_token}"
+    #   client.before_request do |request|
+    #     request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #     request.headers["Content-Type"] = "application/x-www-form-urlencoded"
+    #   end
       
-      response = client.post "/v2/order", body: body_string
+    #   response = client.post "/v2/order", body: body_string
 
-      # redis.set("scalable_order_#{JSON.parse(response.body).as_h["orderId"]}", id)
+    #   # redis.set("scalable_order_#{JSON.parse(response.body).as_h["orderId"]}", id)
 
-      redis.hset("scalable_order_ids", id, JSON.parse(response.body).as_h["orderId"])
+    #   redis.hset("scalable_order_ids", id, JSON.parse(response.body).as_h["orderId"])
 
-      puts response.body
+    #   puts response.body
 
-      paypal_response.to_json
-    end
+    #   paypal_response.to_json
+    # end
 
 
-    def receipt
-      transaction_id = params["transaction_id"]
-      redis = REDIS
-      order_id = redis.hget("scalable_order_ids", transaction_id)
+    # def receipt
+    #   transaction_id = params["transaction_id"]
+    #   redis = REDIS
+    #   order_id = redis.hget("scalable_order_ids", transaction_id)
 
-      url = URI.parse("https://api.scalablepress.com/v3/event?orderId=#{order_id}")
+    #   url = URI.parse("https://api.scalablepress.com/v3/event?orderId=#{order_id}")
 
-      client = HTTP::Client.new(url)
-      client.before_request do |request|
-        request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
-      end
+    #   client = HTTP::Client.new(url)
+    #   client.before_request do |request|
+    #     request.headers["Authorization"] = "Basic #{Base64.strict_encode("#{Amber.settings.secrets["SCALABLE_PRESS_TOKEN"]}")}"
+    #   end
       
-      response = client.get "/v3/event?orderId=#{order_id}"
+    #   response = client.get "/v3/event?orderId=#{order_id}"
 
-      puts response.body
+    #   puts response.body
 
-      receipts = JSON.parse(response.body).as_a
+    #   receipts = JSON.parse(response.body).as_a
 
-      render("receipt.ecr")
-    end
+    #   render("receipt.ecr")
+    # end
 
 
     def change_theme
