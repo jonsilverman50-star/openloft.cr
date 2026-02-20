@@ -1,10 +1,8 @@
 # openloft.cr
 
-[![Amber Framework](https://img.shields.io/badge/using-amber_framework-orange.svg)](https://amberframework.org) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RK689NEEMXCYE)
+[![Amber Framework](https://img.shields.io/badge/using-amber_framework-orange.svg)](https://amberframework.org)
 
 This is OpenLoft Collaborative Editor with call reconnection, using Amber/Crystal. Originally written in Ruby on Rails with ActionCable and ported to Crystal for speed. Featuring: HTML Chat, WebRTC Video/Audio, Collaborative Canvas, Collaborative Text Editor, Shared Video Player.
-
-Help: irc.libera.chat #openloft 
 
 ## Getting Started
 
