@@ -12,7 +12,7 @@ window.setuptheater = () => {
 
 
     theater_channel.on('message_new', (data) => {
-        console.log(data);
+        
         if (data["room"] != window.room) {
             return;
         }
@@ -247,7 +247,7 @@ window.setuptheater = () => {
 
 
     theater_channel.on('user_join', (data) => {
-        console.log(data);
+        
         window.media_element.setSrc(data.url);
         window.theater_load_time = data.time;
         window.media_element.setCurrentTime(window.theater_load_time);

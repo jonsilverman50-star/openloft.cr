@@ -22,7 +22,7 @@ window.setupPersistence = () => {
     persistence_channel.push("message_new", {connected: true});
 
     persistence_channel.on('message_new', (data) => {
-        console.log(data);
+        
         if(data["text_packets"] != undefined) {
             currentDoc = Automerge.init();
             // textEditor.setText("");
@@ -84,7 +84,7 @@ window.setupPersistence = () => {
 
 
         // handle new message here
-        console.log(data);
+        
         var count = $(data['canvas']).length;
         var packets_length = data['packets'];
         window.total = 0;

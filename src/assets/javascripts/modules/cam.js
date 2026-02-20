@@ -243,7 +243,7 @@ export function setupSession() {
 
     window.camera_session.on('user_join', (data) => {
         console.log("session user_join")
-        console.log(data);
+        
         broadcastData({
             type: JOIN_ROOM,
             from: currentUser,

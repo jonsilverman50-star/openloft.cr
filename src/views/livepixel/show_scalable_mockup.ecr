@@ -77,7 +77,7 @@
         },
         onApprove: function(data) {
             const csrfToken = document.querySelector("[name=_csrf]").content;
-            // console.log(data);
+            // 
             return fetch('/place_scalable_order', {
                 method: 'post',
                 headers: {

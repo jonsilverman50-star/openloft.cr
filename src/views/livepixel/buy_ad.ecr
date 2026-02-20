@@ -55,7 +55,7 @@
         },
         onApprove: function(data) {
             const csrfToken = document.querySelector("[name=_csrf]").content;
-            // console.log(data);
+            // 
             return fetch('/capture_order', {
                 method: 'post',
                 headers: {

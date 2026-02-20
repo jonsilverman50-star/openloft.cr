@@ -17,7 +17,7 @@ window.setupChat = () => {
     setInterval(window.start_pinging, 1000);
 
     chat_channel.on('message_new', (data) => {
-        console.log(data);
+        
 
         if (data["ping"]) {
             // update cam name
@@ -45,7 +45,7 @@ window.setupChat = () => {
             return;
         }
 
-        console.log(data);
+        
         if (data["reload"] == true && window.name == "stream") {
             location.reload();
         } else if (data["reload"] == true && window.name != "stream") {
@@ -64,11 +64,11 @@ window.setupChat = () => {
 
         window.scroll_to_bottom();
 
-        // console.log(data);
+        // 
     })
 
     chat_channel.on('user_join', (data) => {
-        console.log(data);
+        
 
 
 

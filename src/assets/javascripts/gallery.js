@@ -28,7 +28,7 @@ $(function () {
         .done(function (e) {
             var data = JSON.parse(e);
   
-            console.log(data);
+            
     
             window.open("/show_scalable_product_categories?designId=" + data["designId"])
     

@@ -24,7 +24,7 @@ window.setupText = () => {
 
     text_channel.on('message_new', (data) => {
         if(data["user_id"] == window.currentUser) return;
-        console.log(data);
+        
 
         if(data["operation"] == "insert") {
             const value = data["value"];
