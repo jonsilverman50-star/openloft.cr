@@ -37,16 +37,8 @@ dependencies:
   sanitize:
     github: straight-shoota/sanitize
 
-  discordcr:
-    github: shardlab/discordcr
-
   logger:
     github: crystal-lang/logger.cr
-
-  slack:
-    github: russ/crystal_slack
-    branch: master
-
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec
