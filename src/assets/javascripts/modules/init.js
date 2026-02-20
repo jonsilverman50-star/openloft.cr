@@ -1203,44 +1203,44 @@ export function init() {
 
     })
 
-    window.textarea = document.getElementById("collaborative_text");
+    // window.textarea = document.getElementById("collaborative_text");
 
-    textarea.selectionStart = 0;
-    textarea.selectionEnd = 0;
+    // textarea.selectionStart = 0;
+    // textarea.selectionEnd = 0;
 
-    window.textEditor = new HtmlTextCollabExt.CollaborativeTextArea({
-        control: textarea,
-        onInsert: (index, value) => {
-            console.log(`"${value}" was inserted at index ${index}`)
-            var newDoc = Automerge.change(currentDoc, doc => {
-                if (!doc.text)
-                    doc.text = new Automerge.Text()
-                doc.text.insertAt(index, value);
-            })
-            // let changes = Automerge.getChanges(currentDoc, newDoc);
-            // let base64 = btoa(String.fromCharCode.apply(null, changes[0]));
-            window.text_channel.push("message_new", { operation: "insert", value: value, index: index, user_id: currentUser, room: room, name: window.name });
-            currentDoc = newDoc;
-        },
-        onDelete: (index, length) => {
-            console.log(`"${length}" characters were deleted at index ${index}`)
-            var newDoc = Automerge.change(currentDoc, doc => {
-                if (!doc.text)
-                    doc.text = new Automerge.Text()
-                doc.text.deleteAt(index, length);
-            })
-            // let changes = Automerge.getChanges(currentDoc, newDoc);
-            // let base64 = btoa(String.fromCharCode.apply(null, changes[0]));
-            window.text_channel.push("message_new", { operation: "delete", index: index, length: length, user_id: currentUser, room: room, name: window.name });
-            currentDoc = newDoc;
-        },
-        onSelectionChanged: (selection) => {
-            console.log(`selection was changed to ${JSON.stringify(selection)}`)
-            window.text_channel.push("message_new", { operation: "selection", anchor: selection["anchor"], target: selection["target"], user_id: currentUser, room: room, name: window.name });
-        }
-    })
+    // window.textEditor = new HtmlTextCollabExt.CollaborativeTextArea({
+    //     control: textarea,
+    //     onInsert: (index, value) => {
+    //         console.log(`"${value}" was inserted at index ${index}`)
+    //         var newDoc = Automerge.change(currentDoc, doc => {
+    //             if (!doc.text)
+    //                 doc.text = new Automerge.Text()
+    //             doc.text.insertAt(index, value);
+    //         })
+    //         // let changes = Automerge.getChanges(currentDoc, newDoc);
+    //         // let base64 = btoa(String.fromCharCode.apply(null, changes[0]));
+    //         window.text_channel.push("message_new", { operation: "insert", value: value, index: index, user_id: currentUser, room: room, name: window.name });
+    //         currentDoc = newDoc;
+    //     },
+    //     onDelete: (index, length) => {
+    //         console.log(`"${length}" characters were deleted at index ${index}`)
+    //         var newDoc = Automerge.change(currentDoc, doc => {
+    //             if (!doc.text)
+    //                 doc.text = new Automerge.Text()
+    //             doc.text.deleteAt(index, length);
+    //         })
+    //         // let changes = Automerge.getChanges(currentDoc, newDoc);
+    //         // let base64 = btoa(String.fromCharCode.apply(null, changes[0]));
+    //         window.text_channel.push("message_new", { operation: "delete", index: index, length: length, user_id: currentUser, room: room, name: window.name });
+    //         currentDoc = newDoc;
+    //     },
+    //     onSelectionChanged: (selection) => {
+    //         console.log(`selection was changed to ${JSON.stringify(selection)}`)
+    //         window.text_channel.push("message_new", { operation: "selection", anchor: selection["anchor"], target: selection["target"], user_id: currentUser, room: room, name: window.name });
+    //     }
+    // })
 
-    window.selectionManager = textEditor.selectionManager();
+    // window.selectionManager = textEditor.selectionManager();
 
 
     // do this last...

@@ -3,9 +3,9 @@ import Amber from 'amber';
 
 window.Amber = Amber;
 
-import Ventus from 'ventus/dist/ventus.min.js';
-var wm = new Ventus.WindowManager();
-window.wm = wm;
+// import Ventus from 'ventus/dist/ventus.min.js';
+// var wm = new Ventus.WindowManager();
+// window.wm = wm;
 
 const Automerge = require('automerge')
 window.Automerge = Automerge;
@@ -13,8 +13,8 @@ let currentDoc = Automerge.init();
 window.currentDoc = currentDoc;
 
 
-const HtmlTextCollabExt = require("../../../node_modules/@cerulean/html-text-collab-ext/dist/es6/index.js");
-window.HtmlTextCollabExt = HtmlTextCollabExt;
+// const HtmlTextCollabExt = require("../../../node_modules/@cerulean/html-text-collab-ext/dist/es6/index.js");
+// window.HtmlTextCollabExt = HtmlTextCollabExt;
 
 import lifecycle from "page-lifecycle/dist/lifecycle.es5.js"
 window.lifecycle = lifecycle;
