@@ -65,9 +65,7 @@ class HTTP::Server
 
 end
 
-ENV["REDIS_URL"] = Amber.settings.redis_url
-puts ENV["REDIS_URL"]
-Amber::Server.pubsub_adapter = Amber::WebSockets::Adapters::RedisAdapter
+# Amber::Server.pubsub_adapter = Amber::WebSockets::Adapters::RedisAdapter
 
 # # hack
 
