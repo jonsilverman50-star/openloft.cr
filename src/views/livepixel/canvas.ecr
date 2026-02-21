@@ -17,7 +17,7 @@
   </li>
   <% if ad != "" && banner_link != "" %>
     <div id="gbaldvertisement">
-      <a href="<%= Sanitizer.process(banner_link) %>" id="gbaldvertisement_link" target="_new"><img id="gbaldvertisement_img" src="data:image/png;base64,<%= Sanitizer.process(ad) %>"></a>
+      <img id="gbaldvertisement_img" src="data:image/png;base64,<%= Sanitizer.process(ad) %>">
     </div>
   <% end %>
 </ul>
