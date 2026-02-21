@@ -65,12 +65,13 @@ class HTTP::Server
 
 end
 
-# Amber::Server.pubsub_adapter = Amber::WebSockets::Adapters::RedisAdapter
+ENV["REDIS_URL"] = Amber.settings.redis_url
+puts ENV["REDIS_URL"]
+Amber::Server.pubsub_adapter = Amber::WebSockets::Adapters::RedisAdapter
 
 # # hack
 
-# puts "using #{Amber::Server.pubsub_adapter}"
-REDIS = Redis.new(host: "127.0.0.1", port: 6379, password: Amber.settings.secrets["REDIS_PASSWORD"])
+puts "using #{Amber::Server.pubsub_adapter}"
+REDIS = Redis.new(host: "127.0.0.1", port: 6379, password: Amber.settings.secrets["redis_password"])
 
 Sanitizer = Sanitize::Policy::Whitelist.new(Policy)
-
