@@ -2,7 +2,7 @@ version: 2.0
 shards:
   amber:
     git: https://github.com/jonsilverman50-star/amber.git
-    version: 1.4.1+git.commit.ff66bf6b17613bfd5e7569156b36e1469dd8bac3
+    version: 1.4.1+git.commit.1094e310544d80d6e44b6494b44e0bfd0a958c82
 
   amber_router:
     git: https://github.com/amberframework/amber-router.git
