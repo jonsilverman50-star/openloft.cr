@@ -67,12 +67,14 @@ window.$ = $;
 const dontLog = false;
 window.dontLog = dontLog;
 
-var name = localStorage.getItem("name");
-// while (name == undefined || name == "" || name.length > 30 || !name.match(/^[a-z0-9]+$/i)) {
-//     name = prompt("What is your name? (alphanumeric, less than 30 characters, no spaces, no cursewords)");
-// }
-name = $("#username").html();
-localStorage.setItem("name", name);
+var name = $("#username").html() || localStorage.getItem("name");
+if (name == undefined || name == "" || name.length > 30 || !name.match(/^[a-z0-9]+$/i)) {
+    // name = prompt("What is your name? (alphanumeric, less than 30 characters, no spaces, no cursewords)");
+    name = "anon" + Math.random().toString(36).substring(2, 5 + 2);
+    $("#username").html(name);
+}
+// name = $("#username").html();
+// localStorage.setItem("name", name);
 window.name = name;
 
 // when this gets too big, vote to clear canvas
