@@ -70,7 +70,6 @@ end
 # # hack
 
 # puts "using #{Amber::Server.pubsub_adapter}"
-puts Amber.settings.secrets["REDIS_PASSWORD"]
 REDIS = Redis.new(host: "127.0.0.1", port: 6379, password: Amber.settings.secrets["REDIS_PASSWORD"])
 
 Sanitizer = Sanitize::Policy::Whitelist.new(Policy)
