@@ -1,6 +1,3 @@
 #!/bin/sh
 
-# echo "nginx442" | sudo -S systemctl restart openloft
-
-killall openloft.cr
-AMBER_ENV=production nohup /home/bup/gbalda/bin/openloft.cr &
+sudo systemctl restart openloft.service
