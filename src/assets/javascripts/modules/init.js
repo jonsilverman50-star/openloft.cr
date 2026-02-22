@@ -153,11 +153,9 @@ export function init() {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({image: dataURL})
         })
-            .done(function (e) {
-                // var id = JSON.parse(e)["data"]["id"];
-                // window.open(link);
-                // window.open("/gallery#" + id);
-            });
+        .done(function (e) {
+            window.open("/gallery");
+        });
 
         e.preventDefault();
     })

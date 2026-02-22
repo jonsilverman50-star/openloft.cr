@@ -110,7 +110,7 @@ shards:
 
   redis:
     git: https://github.com/jonsilverman50-star/crystal-redis.git
-    version: 2.9.1+git.commit.3338583cf43bccd1cf928d60b1f2c8894f991d37
+    version: 2.9.1+git.commit.c0f44d142ba6af233ce7e29f146a744440add096
 
   sanitize:
     git: https://github.com/straight-shoota/sanitize.git
