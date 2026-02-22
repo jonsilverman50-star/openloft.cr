@@ -1,16 +1,14 @@
 <h1><%= I18n.translate("gallery") %></h1>
-<p><%= image_ids.size %> <%= I18n.translate("images_in_gallery") %></p>
+<p><%= images.size %> <%= I18n.translate("images_in_gallery") %></p>
 <p><%= I18n.translate("to_add") %></p>
 <p>
-<% image_ids.each do |image_id| %>
+<% images.each do |image| %>
 
-<p><a href="https://i.imgur.com/<%= image_id %>.png" name="<%= image_id %>" target=_blank><img style="width: 25%; height: 25%; padding: 5px;" src="https://i.imgur.com/<%= image_id %>.png" /></a></p>
-
-<p><a href="#" style="display: none" id="order-<%= image_id %>" class="order-link"><%= I18n.translate("order_print") %></a></p>
+<p><img style="padding: 5px;" src="<%= image %>" /></p>
 
 <% end %>
 </p>
 
-<a href="/gallery_feed.xml"><img width=50 height=50 src="/dist/images/Feed-icon.png" /></a>
+<!-- <a href="/gallery_feed.xml"><img width=50 height=50 src="/dist/images/Feed-icon.png" /></a> -->
 
 <a href="/" target=_blank><%= I18n.translate("back_to_openloft") %></a>

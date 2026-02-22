@@ -134,11 +134,7 @@ export function init() {
     $("#uploader").click(function (e) {
         var dataURL = canvas.toDataURL();
         if (!window.dontLog) console.log(dataURL);
-        var url = "/upload_to_imgur";
-        var base64ImageContent = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-        var blob = base64ToBlob(base64ImageContent, 'image/png');
-        var formData = new FormData();
-        formData.append('picture', blob);
+        var url = "/upload_to_gbalda";
 
         const csrfToken = document.querySelector("[name=_csrf]").content;
         const headers = {
@@ -153,12 +149,14 @@ export function init() {
             cache: false,
             contentType: false,
             processData: false,
-            data: formData
+            dataType: "JSON",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({image: dataURL})
         })
             .done(function (e) {
-                var id = JSON.parse(e)["data"]["id"];
+                // var id = JSON.parse(e)["data"]["id"];
                 // window.open(link);
-                window.open("/gallery#" + id);
+                // window.open("/gallery#" + id);
             });
 
         e.preventDefault();
