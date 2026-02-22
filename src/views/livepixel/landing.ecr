@@ -17,7 +17,7 @@
       <button id="login_button" class="btn btn-primary">Login</button>
     </p>
     <% else %>
-      <p>Welcome, <%= session[:username] %>!</p>
+      <p>Welcome, <%= Sanitizer.process(session[:username].to_s) %>!</p>
       <button id="logout_button" class="btn btn-primary">Logout</button>
       <div id="welcome_links" class="mt-3 mb-3">
         <p class="d-inline mr-3"><button class="btn btn-primary" id="public_room"><%= I18n.translate("create") %></button></p>
