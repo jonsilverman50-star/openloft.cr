@@ -3,14 +3,14 @@
 
     <channel>
 
-    <title>OpenLoft Collaborative Editor Gallery</title>
+    <title>Gbalda Gallery</title>
     <link>https://openloft.org/gallery</link>
     <description>Internet created images</description>
     <language>en-us</language>
     <atom:link href="https://openloft.org/gallery_feed.xml" rel="self" type="application/rss+xml" />
 
     <image>
-        <title>OpenLoft Collaborative Editor Gallery</title>
+        <title>Gbalda Gallery</title>
         <link>https://openloft.org/gallery</link>
         <url>https://i.imgur.com/<%= image_ids[image_ids.size - 1]%>.png</url>
         <width>144</width>
@@ -22,7 +22,7 @@
     <% image_ids.each do |image_id| %>
 
     <item>
-        <title>OpenLoft Collaborative Editor Image</title>
+        <title>Gbalda Image</title>
         <pubDate><%= Time::Format::RFC_2822.format(Time.utc).to_s %></pubDate>
         <link>https://i.imgur.com/<%= image_id %>.png</link>
         <description></description>

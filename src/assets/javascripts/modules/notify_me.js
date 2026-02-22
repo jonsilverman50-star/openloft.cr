@@ -5,7 +5,7 @@ export function notifyMe(message) {
         // check if permission is already granted
         if (Notification.permission === 'granted') {
             // show notification here
-            var notify = new Notification("OpenLoft Collaborative Editor", {
+            var notify = new Notification("Gbalda", {
                 body: message
             });
         } else {
@@ -13,7 +13,7 @@ export function notifyMe(message) {
             Notification.requestPermission().then(function (p) {
                 if (p === 'granted') {
                     // show notification here
-                    var notify = new Notification("OpenLoft Collaborative Editor", {
+                    var notify = new Notification("Gbalda", {
                         body: message
                     });
                 } else {

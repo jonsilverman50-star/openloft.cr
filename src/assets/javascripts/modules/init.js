@@ -672,7 +672,7 @@ export function init() {
     }
 
     // welcome message
-    // window.notifyMe("Welcome to OpenLoft Collaborative Editor, " + name + "! All edits made will be seen live by all visitors of this site. Updates are persisted. Please consider buying an ad to support the development of this site.");
+    // window.notifyMe("Welcome to Gbalda, " + name + "! All edits made will be seen live by all visitors of this site. Updates are persisted. Please consider buying an ad to support the development of this site.");
 
     // cam
     $("#input").val("cam");

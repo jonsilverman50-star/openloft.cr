@@ -2,7 +2,7 @@
 
 [![Amber Framework](https://img.shields.io/badge/using-amber_framework-orange.svg)](https://amberframework.org)
 
-This is OpenLoft Collaborative Editor with call reconnection, using Amber/Crystal. Originally written in Ruby on Rails with ActionCable and ported to Crystal for speed. Featuring: HTML Chat, WebRTC Video/Audio, Collaborative Canvas, Collaborative Text Editor, Shared Video Player.
+This is Gbalda with call reconnection, using Amber/Crystal. Originally written in Ruby on Rails with ActionCable and ported to Crystal for speed. Featuring: HTML Chat, WebRTC Video/Audio, Collaborative Canvas, Collaborative Text Editor, Shared Video Player.
 
 ## Getting Started
 
