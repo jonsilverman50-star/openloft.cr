@@ -244,7 +244,7 @@ class LivepixelController < ApplicationController
   def gallery
     redis = REDIS
 
-    images = redis.lrange("gallery", 0, -1)
+    images = redis.lrange("gallery", 0, -1).reverse
 
     render("gallery.ecr", layout: "gallery.ecr")
   end
