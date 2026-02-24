@@ -102,9 +102,6 @@ window.scroll_to_bottom = scroll_to_bottom;
 import {loadVideoPlayer} from "./modules/load_video_player"
 window.loadVideoPlayer = loadVideoPlayer;
 
-import { start_pinging } from "./modules/start_pinging";
-window.start_pinging = start_pinging;
-
 import {init} from "./modules/init"
 
 // Load OpenLoft
