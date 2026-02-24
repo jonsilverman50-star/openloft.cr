@@ -3,6 +3,8 @@ import Amber from 'amber';
 
 window.timer = {};
 
+
+
 window.setupChat = () => {
     console.log("connected to /chat")
     if (window.chat_socket.channels.length == 0) {
@@ -13,8 +15,13 @@ window.setupChat = () => {
 
     window.chat_channel.push("message_new", { online: true, name: window.name, room: window.room });
 
-    window.start_pinging();
-    setInterval(window.start_pinging, 1000);
+    var t = setInterval(function() {
+        if (window.chat_channel.socket.ws.readyState != 1) {
+            clearInterval(t);
+            return;
+        }
+        if (window.chat_channel) window.chat_channel.push("message_new", { name: window.name, ping: true, room: room, user_id: window.userId });
+    }, 1000);
 
     chat_channel.on('message_new', (data) => {
         
@@ -60,7 +67,7 @@ window.setupChat = () => {
 
         if (data['chat_message'].includes(window.name) && data['name'] != window.name) {
             window.notifyMe("<" + data["name"] + ">" + data["chat_message"]);
-        }
+         }
 
         window.scroll_to_bottom();
 

@@ -39,22 +39,14 @@ export class Channel {
    * Join a channel, subscribe to all channels messages
    */
   join() {
-    try {
-      this.socket.ws.send(JSON.stringify({ event: EVENTS.join, topic: this.topic }))
-    } catch {
-      this._reconnect()
-    }
+    this.socket.ws.send(JSON.stringify({ event: EVENTS.join, topic: this.topic }))
   }
 
   /**
    * Leave a channel, stop subscribing to channel messages
    */
   leave() {
-    try {
-      this.socket.ws.send(JSON.stringify({ event: EVENTS.leave, topic: this.topic }))
-    } catch {
-      this._reconnect()
-    }
+    this.socket.ws.send(JSON.stringify({ event: EVENTS.leave, topic: this.topic }))
   }
 
   /**
@@ -81,11 +73,7 @@ export class Channel {
    * @param {Object} payload - payload object: `{message: 'hello'}`
    */
   push(subject, payload) {
-    try {
-      this.socket.ws.send(JSON.stringify({ event: EVENTS.message, topic: this.topic, subject: subject, payload: payload }))
-    } catch {
-      this._reconnect()
-    }
+    this.socket.ws.send(JSON.stringify({ event: EVENTS.message, topic: this.topic, subject: subject, payload: payload }))
   }
 }
 
